@@ -33,8 +33,8 @@ The new project is added to the factory contract's projects array.
 
 2. Owner may cancel contract at any time until funds are drawn down.
 
-Contributors may add funds until either deadline (creation time plus time limit) expires or goal is met or contract is cancelled, after any of these no further contributions may be made.
+3. Contributors may add funds until either deadline (creation time plus time limit) expires or goal is met or contract is cancelled, after any of these no further contributions may be made.
 
-3. If contract cancelled or deadline expired and goal not met contributors can get their funds back by calling withdrawContribution
+4. If contract cancelled or deadline expired and goal not met contributors can get their funds back by calling withdrawContribution
 
-If goal is met and contract is not cancelled owner can withdraw the contributions in one or more transactions by calling drawDownFunds
+5. If goal is met and contract is not cancelled owner can withdraw the contributions in one or more transactions by calling drawDownFunds
