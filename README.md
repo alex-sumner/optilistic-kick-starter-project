@@ -31,10 +31,10 @@ Planned usage:
 1. Owner creates contract specifying funding goal, time limit and draw down interval by calling KickFactory.launchProject. 
 The new project is added to the factory contract's projects array.
 
-2a. Owner may cancel contract at any time until funds are drawn down.
+2. Owner may cancel contract at any time until funds are drawn down.
 
-2b. Contributors may add funds until either deadline (creation time plus time limit) expires or goal is met or contract is cancelled, after any of these no further contributions may be made.
+Contributors may add funds until either deadline (creation time plus time limit) expires or goal is met or contract is cancelled, after any of these no further contributions may be made.
 
-3a. If contract cancelled or deadline expired and goal not met contributors can get their funds back by calling withdrawContribution
+3. If contract cancelled or deadline expired and goal not met contributors can get their funds back by calling withdrawContribution
 
-3b. If goal is met and contract is not cancelled owner can withdraw the contributions in one or more transactions by calling drawDownFunds
+If goal is met and contract is not cancelled owner can withdraw the contributions in one or more transactions by calling drawDownFunds
