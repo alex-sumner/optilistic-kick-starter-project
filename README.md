@@ -1,5 +1,5 @@
 # optilistic-kick-starter-project
-Smart contract and tests for a Kickstarter style crowdfunding scheme
+Smart contract and tests for a Kickstarter style crowdfunding scheme, requirements are part of a training exercise by https://optilistic.com/
 
 Requirements:
 
