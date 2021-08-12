@@ -1,6 +1,8 @@
 # optilistic-kick-starter-project
 Smart contract and tests for a Kickstarter style crowdfunding scheme, requirements are part of a training exercise from https://optilistic.com/
 
+**Currently NFTHandler.sol, KickBronze.sol, KickSilver.sol and KickGold.sol are not used**
+
 Requirements:
 
 - The smart contract is reusable; multiple projects can be registered and accept ETH concurrently.
