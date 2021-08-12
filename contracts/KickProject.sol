@@ -19,8 +19,8 @@ contract KickProject {
     uint public goal;
     
     // how quickly can the creator draw the funds once goal is met? 
-        // If 0 then can take it all immediately, if n > 0 then can only take out 10% in the first period of n, 
-        // another 10% in the next n, etc. so can't draw all funds out until time of 9n has passed
+    // If 0 then can take it all immediately, if n > 0 then can only take out 10% in the first period of n, 
+    // another 10% in the next n, etc. so can't draw all funds out until time of 9n has passed
     uint public drawDownInterval;
     
     // the time at which the contributions reached the goal amount, zero if that hasn't happened yet
@@ -153,7 +153,7 @@ contract KickProject {
     }
     
     // checks that goal is met, and project has not been cancelled and funds contributed minus funds already drawn down exceeds or equals amount requested, 
-        // if so updates drawnDown then transfers requested amount to owner, otherwise rejects
+    // if so updates drawnDown then transfers requested amount to owner, otherwise rejects
     function drawDownFunds(uint _amount) public onlyOwner {
         if (cancelled) {
             revert("Cancelled");
