@@ -3,6 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 //import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
 
 contract KickProject {
 
@@ -18,8 +19,8 @@ contract KickProject {
     uint public goal;
     
     // how quickly can the creator draw the funds once goal is met? 
-    // If 0 then can take it all immediately, if n > 0 then can only take out 10% in the first period of n, 
-    // another 10% in the next n, etc. so can't draw all funds out until time of 9n has passed
+        // If 0 then can take it all immediately, if n > 0 then can only take out 10% in the first period of n, 
+        // another 10% in the next n, etc. so can't draw all funds out until time of 9n has passed
     uint public drawDownInterval;
     
     // the time at which the contributions reached the goal amount, zero if that hasn't happened yet
@@ -39,6 +40,15 @@ contract KickProject {
     
     //current total of all contributions
     uint public amountCollected;
+
+    // minimum contribution to achieve bronze token
+    uint bronze;
+    
+    // minimum contribution to achieve silver token
+    uint silver;
+    
+    // minimum contribution to achieve gold token
+    uint gold;
     
     //functions
     
@@ -77,6 +87,7 @@ contract KickProject {
         if (amountCollected >= goal) {
             whenGoalReached = block.timestamp;
         }
+            
     }
     
     // rejects with request to use the contribute function
@@ -114,41 +125,41 @@ contract KickProject {
     }
     
     // checks that goal is met, and project has not been cancelled and funds contributed minus funds already drawn down exceeds or equals amount requested, 
-    // if so updates drawnDown then transfers requested amount to owner, otherwise rejects
-    function drawDownFunds(uint _amount) public onlyOwner {
-        if (cancelled) {
-            revert("Project has been cancelled");
+        // if so updates drawnDown then transfers requested amount to owner, otherwise rejects
+        function drawDownFunds(uint _amount) public onlyOwner {
+            if (cancelled) {
+                revert("Project has been cancelled");
+            }
+            if (amountCollected < goal) {
+                revert("Project goal has not been met");
+            }
+            uint amountAvailableNow = calcAmountAvailableNow();
+            if (amountAvailableNow < _amount) {
+                revert("Insufficient funds available");
+            }
+            drawnDown += _amount;
+            (bool sent, ) = owner.call{value: _amount}("");
+            require(sent, "Failed to send Ether");
         }
-        if (amountCollected < goal) {
-            revert("Project goal has not been met");
-        }
-        uint amountAvailableNow = calcAmountAvailableNow();
-        if (amountAvailableNow < _amount) {
-            revert("Insufficient funds available");
-        }
-        drawnDown += _amount;
-        (bool sent, ) = owner.call{value: _amount}("");
-        require(sent, "Failed to send Ether");
-    }
     
-    function calcAmountAvailableNow() private view returns (uint) {
-        if (whenGoalReached == 0 || block.timestamp < whenGoalReached) {
-            return 0;
+        function calcAmountAvailableNow() private view returns (uint) {
+            if (whenGoalReached == 0 || block.timestamp < whenGoalReached) {
+                return 0;
+            }
+            if (drawDownInterval == 0) {
+                return amountCollected - drawnDown;
+            }
+            uint intervalsSinceGoalReached = ((block.timestamp - whenGoalReached) / drawDownInterval) + 1;
+            if (intervalsSinceGoalReached > 10) {
+                intervalsSinceGoalReached = 10;
+            }
+            return ((amountCollected * intervalsSinceGoalReached) / 10) - drawnDown;
         }
-        if (drawDownInterval == 0) {
-            return amountCollected - drawnDown;
-        }
-        uint intervalsSinceGoalReached = ((block.timestamp - whenGoalReached) / drawDownInterval) + 1;
-        if (intervalsSinceGoalReached > 10) {
-            intervalsSinceGoalReached = 10;
-        }
-        return ((amountCollected * intervalsSinceGoalReached) / 10) - drawnDown;
-    }
         
-    modifier onlyOwner {
-        require(msg.sender == owner, "Only owner can call this function.");
-         _;
-    }
+        modifier onlyOwner {
+            require(msg.sender == owner, "Only owner can call this function.");
+            _;
+        }
 
 }
     
@@ -168,3 +179,17 @@ contract KickFactory {
     }
 }
 
+contract KickBronze is ERC721PresetMinterPauserAutoId {
+    constructor() ERC721PresetMinterPauserAutoId("Bronze", "KCT", "") {
+    }
+}
+
+contract KickSilver is ERC721PresetMinterPauserAutoId {
+    constructor() ERC721PresetMinterPauserAutoId("Silver", "KCT", "") {
+    }
+}
+
+contract KickGold is ERC721PresetMinterPauserAutoId {
+    constructor() ERC721PresetMinterPauserAutoId("Gold", "KCT", "") {
+    }
+}
