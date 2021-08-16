@@ -24,7 +24,7 @@ Additional Requirements:
 
 - Make funding timeout configurable.
 - Add a configurable, timed spread of withdraw limits for the creator (i.e. can only withdraw 10% every X days).
-- Add configurable support tiers, where a supporter receives a minted NFT of each tier they donate above. (not done yet)
+- Add configurable support tiers, where a supporter receives a minted NFT of each tier they donate above.
 
 Planned usage:
 
