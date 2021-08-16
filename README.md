@@ -1,8 +1,6 @@
 # optilistic-kick-starter-project
 Smart contract and tests for a Kickstarter style crowdfunding scheme, requirements are part of a training exercise from https://optilistic.com/
 
-**Currently NFTHandler.sol, KickBronze.sol, KickSilver.sol and KickGold.sol are not used**
-
 Requirements:
 
 - The smart contract is reusable; multiple projects can be registered and accept ETH concurrently.
@@ -22,7 +20,7 @@ Requirements:
   - The creator can withdraw any percentage of contributed funds
 - The creator can choose to cancel their project before the 30 days are over
 
-Additional Requirements (only first 2 implemented):
+Additional Requirements:
 
 - Make funding timeout configurable.
 - Add a configurable, timed spread of withdraw limits for the creator (i.e. can only withdraw 10% every X days).
