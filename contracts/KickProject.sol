@@ -2,15 +2,19 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-//import {NFTHandler} from "./NFTHandler.sol";
 //import "hardhat/console.sol";
+
+abstract contract MedalInterface {
+    function mint(address recipient) public virtual;
+}
 
 contract KickProject {
 
     // Storage
     
-    // the address of the contract itself
-    address public projectAddr;
+    MedalInterface kickBronze;
+    MedalInterface kickSilver;
+    MedalInterface kickGold;
     
     // the creator of the project
     address public owner;
@@ -41,37 +45,36 @@ contract KickProject {
     // records which NFTs have been awarded
     mapping(address => uint) public nfts;
 
-    
-    //current total of all contributions
+    // current total of all contributions
     uint public amountCollected;
 
-    // NFT handling not complete, commented out
     // minimum contribution to achieve bronze token
-    //uint bronze;
+    uint bronze;
     
     // minimum contribution to achieve silver token
-    //uint silver;
+    uint silver;
     
     // minimum contribution to achieve gold token
-    //uint gold;
+    uint gold;
 
-    //NFTHandler private nftHandler;
-    
+    uint constant minContribution = 0.01 ether;
+
     //functions
     
     // Sets the owner to _owner, goal to _goal, drawDownInterval to _drawDownInterval and deadline to current time plus the timeout
     //
-    constructor(address _owner, uint _goal, uint _timeout, uint _drawDownInterval) {
+    constructor(address _owner, uint _goal, uint _timeout, uint _drawDownInterval, uint _bronze, address _bronzeAddress, uint _silver, address _silverAddress, uint _gold, address _goldAddress) {
+        require(_goal >= minContribution, "Goal must at least equal minimum contribution");
         owner = _owner;
         goal = _goal;
         deadline = block.timestamp + _timeout;
         drawDownInterval = _drawDownInterval;
-        //bronze = _bronze;
-        //silver = _silver;
-        //gold = _gold;
-        projectAddr = address(this);
-        //nftHandler = new NFTHandler();
-        // console.log("constructor time %s deadline %s", block.timestamp, deadline);
+        bronze = _bronze;
+        kickBronze = MedalInterface(_bronzeAddress);
+        silver = _silver;
+        kickSilver = MedalInterface(_silverAddress);
+        gold = _gold;
+        kickGold = MedalInterface(_goldAddress);
     }
     
     // Checks project not cancelled, funds > 0.01 eth, and goal not yet met, rejects if not, 
@@ -79,7 +82,6 @@ contract KickProject {
     // updating their amount contributed if they have previously contributed
     // or adding a new mapping for them if this is their first contribution
     function contribute() public payable {
-        // console.log("contribute time %s deadline %s", block.timestamp, deadline);
         if (cancelled) {
             revert("Project cancelled");
         }
@@ -90,7 +92,7 @@ contract KickProject {
             revert("Project goal met");
         }
         uint contribution = msg.value;
-        if (contribution < 0.01 ether) {
+        if (contribution < minContribution) {
             revert("Min contribution 0.01 ether");
         }
         contributions[msg.sender] += contribution;
@@ -98,24 +100,18 @@ contract KickProject {
         if (amountCollected >= goal) {
             whenGoalReached = block.timestamp;
         }
-        /* bool awardBronze = false; */
-        /* if ((contributions[msg.sender] >= bronze) && (nfts[msg.sender] < 1)) { */
-        /*     awardBronze = true; */
-        /*     nfts[msg.sender] = 1; */
-        /* } */
-        /* bool awardSilver = false; */
-        /* if ((contributions[msg.sender] >= silver) && (nfts[msg.sender] < 2)) { */
-        /*     awardSilver = true; */
-        /*     nfts[msg.sender] = 2; */
-        /* } */
-        /* bool awardGold = false; */
-        /* if ((contributions[msg.sender] >= gold) && (nfts[msg.sender] < 3)) { */
-        /*     awardGold = true; */
-        /*     nfts[msg.sender] = 3; */
-        /* } */
-        /* if (awardBronze || awardSilver || awardGold) { */
-        /*     nftHandler.award(msg.sender, awardBronze, awardSilver, awardGold); */
-        /* } */
+        if ((contributions[msg.sender] >= bronze) && (nfts[msg.sender] < 1)) {
+            kickBronze.mint(msg.sender);
+            nfts[msg.sender] = 1;
+        }
+        if ((contributions[msg.sender] >= silver) && (nfts[msg.sender] < 2)) {
+            kickSilver.mint(msg.sender);
+            nfts[msg.sender] = 2;
+        }
+        if ((contributions[msg.sender] >= gold) && (nfts[msg.sender] < 3)) {
+            kickGold.mint(msg.sender);
+            nfts[msg.sender] = 3;
+        }
     }
     
     // rejects with request to use the contribute function
